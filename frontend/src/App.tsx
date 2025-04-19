@@ -6,8 +6,8 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import UserPreferences from './pages/UserPreferences';
-//import Recommendations from './pages/Recommendations';
-//import BookSearch from './pages/BookSearch';
+import Recommendations from './pages/Recommendations';
+import BookSearch from './pages/BookSearch';
 
 function App() {
   return (
@@ -24,6 +24,8 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/preferences" element={<UserPreferences />} />
+              <Route path="/recommendations" element={<Recommendations />} />
+              <Route path="/search" element={<BookSearch />} />
             </Routes>
           </Container>
           <Footer />

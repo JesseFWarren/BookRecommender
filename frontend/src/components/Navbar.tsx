@@ -65,7 +65,7 @@ const Navbar = () => {
           )}
           <BookIcon sx={{ mr: 2 }} />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            BookMind
+            ReadDNA
           </Typography>
           {!isMobile && (
             <Box sx={{ display: 'flex', gap: 2 }}>

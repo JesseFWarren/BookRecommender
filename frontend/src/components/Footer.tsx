@@ -19,7 +19,7 @@ const Footer = () => {
         <Typography variant="body2" color="text.secondary" align="center">
           {'© '}
           {new Date().getFullYear()}
-          {' BookMind. All rights reserved. '}
+          {' ReadDNA. All rights reserved. '}
           <Link color="inherit" href="https://github.com/JesseFWarren">
             GitHub
           </Link>
