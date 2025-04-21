@@ -11,10 +11,11 @@ from huggingface_hub import hf_hub_download
 app = Flask(__name__)
 CORS(app)
 
+# Model and Hugging Face configuration
 MODEL_NAME = "all-mpnet-base-v2"
 HF_REPO = "JesseFWarrenV/BookRecommender"
 
-# Lazy globals
+# Lazy-loaded globals
 encoder = None
 book_embeddings = None
 book_ids = None
@@ -22,6 +23,10 @@ faiss_index = None
 subset_path = None
 
 def lazy_load():
+    """
+    Loads the SentenceTransformer model, embeddings, book titles, FAISS index,
+    and metadata from Hugging Face. Ensures components are loaded only once.
+    """
     global encoder, book_embeddings, book_ids, faiss_index, subset_path
     if encoder is not None:
         return
@@ -44,7 +49,13 @@ def lazy_load():
     print("All resources loaded.")
 
 def load_books():
-    lazy_load()  # make sure subset_path is set
+    """
+    Loads metadata from books_subset.csv and returns a list of dictionaries for each book.
+
+    Returns:
+        List[Dict]: List of book metadata dictionaries.
+    """
+    lazy_load()
     df = pd.read_csv(subset_path)
 
     required_columns = ['title', 'authors', 'categories', 'description']
@@ -70,6 +81,16 @@ def load_books():
     return books
 
 def get_book_recommendations(user_preferences, num_recommendations=20):
+    """
+    Given a list of user preferences from the user quiz, returns top book recommendations using FAISS.
+
+    Args:
+        user_preferences (List[str]): Keywords or titles from the user.
+        num_recommendations (int): Number of books to recommend.
+
+    Returns:
+        List[Dict]: Recommended books.
+    """
     lazy_load()
 
     try:
@@ -94,6 +115,9 @@ def get_book_recommendations(user_preferences, num_recommendations=20):
 
 @app.route('/api/books')
 def get_books():
+    """
+    Endpoint to return all book metadata.
+    """
     try:
         books = load_books()
         return jsonify(books)
@@ -102,6 +126,9 @@ def get_books():
 
 @app.route('/api/recommendations', methods=['POST'])
 def get_recommendations():
+    """
+    Endpoint to return personalized book recommendations based on user input.
+    """
     try:
         user_preferences = request.json.get('preferences', [])
         if not user_preferences:
@@ -114,9 +141,14 @@ def get_recommendations():
 
 @app.before_first_request
 def warm_up():
-    print("Warming up server...")
+    """
+    Ensures models and indexes are loaded before the first request.
+    """
     lazy_load()
 
-if __name__ == '__main__':
+def main():
     lazy_load()
     app.run(debug=True)
+
+if __name__ == '__main__':
+    main()
