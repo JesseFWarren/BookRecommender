@@ -6,4 +6,3 @@ pandas==1.5.3
 numpy==1.23.5
 huggingface-hub==0.22.2
 gunicorn==21.2.0
-scikit-surprise==1.1.3
