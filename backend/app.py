@@ -15,11 +15,11 @@ MODEL_NAME = "all-mpnet-base-v2"
 try:
     encoder = SentenceTransformer(MODEL_NAME)
     
-    book_embeddings = np.load('../models/hybrid_book_embeddings_subset.npy', allow_pickle=True)
+    book_embeddings = np.load('../models/hybrid_book_embeddings.npy', allow_pickle=True)
     
-    book_ids = np.load('../models/hybrid_book_ids_subset.npy', allow_pickle=True)
+    book_ids = np.load('../models/hybrid_book_ids.npy', allow_pickle=True)
     
-    faiss_index = faiss.read_index('../models/faiss_index_subset.idx')
+    faiss_index = faiss.read_index('../models/faiss_index.idx')
 except Exception as e:
     raise
 
@@ -54,7 +54,7 @@ def load_books():
     
     return books
 
-def get_book_recommendations(user_preferences, num_recommendations=10):
+def get_book_recommendations(user_preferences, num_recommendations=20):
     
     try:
         query_text = " ".join(user_preferences)

@@ -21,12 +21,12 @@ const Home = () => {
     {
       icon: <AutoStoriesIcon sx={{ fontSize: 40 }} />,
       title: 'Personalized Recommendations with Depth',
-      description: 'Get tailored suggestions from millions of books based on your unique reading DNA - from writing style to thematic preferences.',
+      description: 'Get tailored suggestions from thousands of books based on your unique reading DNA. From writing style to thematic preferences.',
     },
     {
       icon: <PsychologyIcon sx={{ fontSize: 40 }} />,
       title: 'AI-Powered Analysis',
-      description: 'Our advanced algorithms understand the nuances of your taste - whether you prefer introspective narratives or fast-paced adventures.',
+      description: 'Our advanced model understands the nuances of your taste!',
     },
   ];
 

@@ -1,8 +1,8 @@
 import numpy as np
 import faiss
 
-EMB_PATH   = "../models/hybrid_book_embeddings_subset.npy"
-INDEX_PATH = "../models/faiss_index_subset.idx"
+EMB_PATH   = "../models/hybrid_book_embeddings.npy"
+INDEX_PATH = "../models/faiss_index.idx"
 
 def main():
     embeddings = np.load(EMB_PATH).astype("float32")

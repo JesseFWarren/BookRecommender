@@ -14,13 +14,12 @@ import {
   FormControlLabel,
   FormControl,
   FormLabel,
-  Slider,
   Chip,
-  Stack,
   Rating,
   TextField,
-  Autocomplete,
   Alert,
+  CircularProgress,
+  Backdrop,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -65,30 +64,67 @@ interface QuizAnswers {
   readingFrequency: string;
   preferredLength: string;
   favoriteAuthors: string;
+  favoriteBooks: string;
   topics: string;
   mood: string;
+  writingStyle: string;
+  readingGoal: string;
 }
 
 const GENRES = [
   'Fiction', 'Non-Fiction', 'Mystery', 'Science Fiction', 'Fantasy', 
   'Romance', 'Thriller', 'Historical Fiction', 'Biography', 'Self-Help',
-  'Science', 'Technology', 'Business', 'Philosophy', 'Poetry'
+  'Science', 'Technology', 'Business', 'Philosophy', 'Poetry',
+  'Horror', 'Adventure', 'Contemporary', 'Literary Fiction', 'Young Adult'
+];
+
+const MOODS = [
+  'Happy and Uplifting',
+  'Dark and Mysterious',
+  'Thoughtful and Reflective',
+  'Exciting and Adventurous',
+  'Cozy and Comfortable',
+  'Emotional and Moving',
+  'Funny and Humorous',
+  'Suspenseful and Tense'
+];
+
+const WRITING_STYLES = [
+  'Descriptive and Poetic',
+  'Direct and Simple',
+  'Complex and Challenging',
+  'Conversational and Casual',
+  'Fast-paced and Dynamic',
+  'Detailed and Technical'
+];
+
+const READING_GOALS = [
+  'Entertainment and Escape',
+  'Learning New Things',
+  'Personal Growth',
+  'Professional Development',
+  'Literary Appreciation',
+  'Cultural Understanding'
 ];
 
 const UserPreferences = () => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [answers, setAnswers] = useState<QuizAnswers>({
     favoriteGenres: [],
     readingFrequency: '',
     preferredLength: '',
     favoriteAuthors: '',
+    favoriteBooks: '',
     topics: '',
     mood: '',
+    writingStyle: '',
+    readingGoal: ''
   });
 
-  const steps = ['Reading Habits', 'Preferences', 'Interests'];
+  const steps = ['Reading Habits', 'Favorites', 'Preferences', 'Goals'];
 
   const handleGenreToggle = (genre: string) => {
     setAnswers(prev => ({
@@ -109,14 +145,20 @@ const UserPreferences = () => {
 
   const handleSubmit = async () => {
     try {
+      setIsLoading(true);
+      setError(null);
+
       // Convert answers to preferences array
       const preferences = [
         ...answers.favoriteGenres,
         answers.readingFrequency,
         answers.preferredLength,
         answers.favoriteAuthors,
+        answers.favoriteBooks,
         answers.topics,
         answers.mood,
+        answers.writingStyle,
+        answers.readingGoal
       ].filter(Boolean);
 
       const response = await fetch('http://localhost:5000/api/recommendations', {
@@ -131,10 +173,12 @@ const UserPreferences = () => {
         throw new Error('Failed to get recommendations');
       }
 
-      // Navigate to recommendations page
-      navigate('/recommendations', { state: { recommendations: await response.json() } });
+      const recommendations = await response.json();
+      navigate('/recommendations', { state: { recommendations } });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to submit preferences');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -175,6 +219,62 @@ const UserPreferences = () => {
       case 1:
         return (
           <Box>
+            <TextField
+              fullWidth
+              label="What are some books you've enjoyed recently?"
+              placeholder="e.g., The Midnight Library, Project Hail Mary"
+              value={answers.favoriteBooks}
+              onChange={(e) => setAnswers(prev => ({ ...prev, favoriteBooks: e.target.value }))}
+              sx={{ mb: 3 }}
+            />
+
+            <TextField
+              fullWidth
+              label="Who are some of your favorite authors?"
+              placeholder="e.g., Andy Weir, Matt Haig"
+              value={answers.favoriteAuthors}
+              onChange={(e) => setAnswers(prev => ({ ...prev, favoriteAuthors: e.target.value }))}
+              sx={{ mb: 3 }}
+            />
+
+            <TextField
+              fullWidth
+              label="What topics interest you the most?"
+              placeholder="e.g., space exploration, personal growth, ancient history"
+              value={answers.topics}
+              onChange={(e) => setAnswers(prev => ({ ...prev, topics: e.target.value }))}
+              sx={{ mb: 3 }}
+            />
+          </Box>
+        );
+
+      case 2:
+        return (
+          <Box>
+            <FormControl component="fieldset" sx={{ width: '100%', mb: 3 }}>
+              <FormLabel>What kind of mood are you in right now?</FormLabel>
+              <RadioGroup
+                value={answers.mood}
+                onChange={(e) => setAnswers(prev => ({ ...prev, mood: e.target.value }))}
+              >
+                {MOODS.map((mood) => (
+                  <FormControlLabel key={mood} value={mood.toLowerCase()} control={<Radio />} label={mood} />
+                ))}
+              </RadioGroup>
+            </FormControl>
+
+            <FormControl component="fieldset" sx={{ width: '100%', mb: 3 }}>
+              <FormLabel>What writing style do you prefer?</FormLabel>
+              <RadioGroup
+                value={answers.writingStyle}
+                onChange={(e) => setAnswers(prev => ({ ...prev, writingStyle: e.target.value }))}
+              >
+                {WRITING_STYLES.map((style) => (
+                  <FormControlLabel key={style} value={style.toLowerCase()} control={<Radio />} label={style} />
+                ))}
+              </RadioGroup>
+            </FormControl>
+
             <FormControl component="fieldset" sx={{ width: '100%', mb: 3 }}>
               <FormLabel>What length of books do you prefer?</FormLabel>
               <RadioGroup
@@ -187,39 +287,21 @@ const UserPreferences = () => {
                 <FormControlLabel value="any" control={<Radio />} label="No preference" />
               </RadioGroup>
             </FormControl>
-
-            <TextField
-              fullWidth
-              label="Who are some of your favorite authors?"
-              value={answers.favoriteAuthors}
-              onChange={(e) => setAnswers(prev => ({ ...prev, favoriteAuthors: e.target.value }))}
-              sx={{ mb: 3 }}
-            />
           </Box>
         );
 
-      case 2:
+      case 3:
         return (
           <Box>
-            <TextField
-              fullWidth
-              label="What topics interest you the most?"
-              placeholder="e.g., space exploration, ancient history, personal growth"
-              value={answers.topics}
-              onChange={(e) => setAnswers(prev => ({ ...prev, topics: e.target.value }))}
-              sx={{ mb: 3 }}
-            />
-
             <FormControl component="fieldset" sx={{ width: '100%', mb: 3 }}>
-              <FormLabel>What kind of mood or atmosphere do you prefer in books?</FormLabel>
+              <FormLabel>What's your main goal for reading right now?</FormLabel>
               <RadioGroup
-                value={answers.mood}
-                onChange={(e) => setAnswers(prev => ({ ...prev, mood: e.target.value }))}
+                value={answers.readingGoal}
+                onChange={(e) => setAnswers(prev => ({ ...prev, readingGoal: e.target.value }))}
               >
-                <FormControlLabel value="uplifting" control={<Radio />} label="Uplifting and Inspirational" />
-                <FormControlLabel value="dark" control={<Radio />} label="Dark and Mysterious" />
-                <FormControlLabel value="thoughtful" control={<Radio />} label="Thoughtful and Reflective" />
-                <FormControlLabel value="adventurous" control={<Radio />} label="Exciting and Adventurous" />
+                {READING_GOALS.map((goal) => (
+                  <FormControlLabel key={goal} value={goal.toLowerCase()} control={<Radio />} label={goal} />
+                ))}
               </RadioGroup>
             </FormControl>
           </Box>
@@ -234,10 +316,10 @@ const UserPreferences = () => {
     <Container maxWidth="md">
       <Box sx={{ my: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          Reading Preferences Quiz
+          Personalized Reading Recommendations
         </Typography>
         <Typography variant="subtitle1" align="center" color="text.secondary" sx={{ mb: 4 }}>
-          Help us understand your reading preferences to provide better book recommendations
+          Help us understand your reading preferences to find your next favorite book
         </Typography>
 
         {error && (
@@ -246,7 +328,35 @@ const UserPreferences = () => {
           </Alert>
         )}
 
-        <Paper sx={{ p: 3 }}>
+        <Paper sx={{ p: 3, position: 'relative' }}>
+          {isLoading && (
+            <Backdrop
+              sx={{
+                position: 'absolute',
+                color: '#fff',
+                zIndex: (theme) => theme.zIndex.drawer + 1,
+                backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              }}
+              open={true}
+            >
+              <Box sx={{ textAlign: 'center' }}>
+                <CircularProgress color="primary" />
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mt: 2,
+                    color: 'primary.main',
+                    backgroundColor: 'white',
+                    padding: '8px 16px',
+                    borderRadius: '4px',
+                  }}
+                >
+                  Finding your perfect books...
+                </Typography>
+              </Box>
+            </Backdrop>
+          )}
+
           <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
             {steps.map((label) => (
               <Step key={label}>
@@ -260,15 +370,20 @@ const UserPreferences = () => {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
             <Button
               onClick={handleBack}
-              disabled={activeStep === 0}
+              disabled={activeStep === 0 || isLoading}
             >
               Back
             </Button>
             <Button
               variant="contained"
               onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
+              disabled={isLoading}
             >
-              {activeStep === steps.length - 1 ? 'Get Recommendations' : 'Next'}
+              {activeStep === steps.length - 1 ? (
+                isLoading ? 'Finding Books...' : 'Get Recommendations'
+              ) : (
+                'Next'
+              )}
             </Button>
           </Box>
         </Paper>
