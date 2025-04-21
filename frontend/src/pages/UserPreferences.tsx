@@ -161,7 +161,7 @@ const UserPreferences = () => {
         answers.readingGoal
       ].filter(Boolean);
 
-      const response = await fetch('http://localhost:5000/api/recommendations', {
+      const response = await fetch('https://bookrecommenderbackend.onrender.com/recommendations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

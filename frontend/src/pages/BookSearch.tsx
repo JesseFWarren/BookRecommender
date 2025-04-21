@@ -56,7 +56,7 @@ const BookSearch = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch('http://localhost:5000/api/books');
+        const response = await fetch('https://bookrecommenderbackend.onrender.com/books');
         console.log('Response received:', response.status);
         
         if (!response.ok) {
