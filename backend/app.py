@@ -6,25 +6,33 @@ import faiss
 import os
 from sentence_transformers import SentenceTransformer
 import logging
+from huggingface_hub import hf_hub_download
 
 app = Flask(__name__)
 CORS(app)
 
 MODEL_NAME = "all-mpnet-base-v2"
+HF_REPO = "JesseFWarrenV/BookRecommender"
 
 try:
     encoder = SentenceTransformer(MODEL_NAME)
-    
-    book_embeddings = np.load('../models/hybrid_book_embeddings.npy', allow_pickle=True)
-    
-    book_ids = np.load('../models/hybrid_book_ids.npy', allow_pickle=True)
-    
-    faiss_index = faiss.read_index('../models/faiss_index.idx')
+
+    # Download files from Hugging Face
+    emb_path = hf_hub_download(repo_id=HF_REPO, filename="hybrid_book_embeddings.npy", repo_type="dataset")
+    ids_path = hf_hub_download(repo_id=HF_REPO, filename="hybrid_book_ids.npy", repo_type="dataset")
+    faiss_path = hf_hub_download(repo_id=HF_REPO, filename="faiss_index.idx", repo_type="dataset")
+    subset_path = hf_hub_download(repo_id=HF_REPO, filename="books_subset.csv", repo_type="dataset")
+
+    # Load files
+    book_embeddings = np.load(emb_path, allow_pickle=True)
+    book_ids = np.load(ids_path, allow_pickle=True)
+    faiss_index = faiss.read_index(faiss_path)
+
 except Exception as e:
-    raise
+    raise RuntimeError(f"Error loading model/data: {e}")
 
 def load_books():
-    file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'books_subset.csv')
+    file_path = subset_path
     
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"CSV file not found at {file_path}")
