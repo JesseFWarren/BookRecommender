@@ -60,25 +60,25 @@ To evaluate my models I tested them using 3 well known books: Harry Potter and t
     This approach always generated top rated books in the dataset. Although they are popular books and may be liked by users, it has little to do with the user query.   
 2. Classical ML Approach:  
     This model uses TF-IDF and Cosine similarity on titles.   
-    -For Harry Potter, it returns other Harry potter related titles.  
-    -For the Hobbit, it returns poems from the hobbit, Tolkien themed study guides, and some random titles.  
-    -For the Great Gatsby, it recommends different versions of the Great Gatsby and other titles with the word "Great" in it.  
+    - For Harry Potter, it returns other Harry potter related titles.  
+    - For the Hobbit, it returns poems from the hobbit, Tolkien themed study guides, and some random titles.  
+    - For the Great Gatsby, it recommends different versions of the Great Gatsby and other titles with the word "Great" in it.  
 3. Deep Learning Approach:  
-    -For Harry Potter, it suggested more Harry Potter books, and similar fantasty series.  
-    -For The Hobbit, it suggested other fantasty stories and mythological content.  
-    -For The Great Gatsby, it returned works related to American Literature.  
+    - For Harry Potter, it suggested more Harry Potter books, and similar fantasty series.  
+    - For The Hobbit, it suggested other fantasty stories and mythological content.  
+    - For The Great Gatsby, it returned works related to American Literature.  
 
 In conclusion, the deep learning model performs the best in terms of relevant recommendation and quality. Likely do to the addition of semantic similarity versus only looking at the book title. While the classical model offers a more lightweight recommendation alternative while giving relatively good recommendations. Lastly, the naive model is really only useful as a baseline but shows that both the classical and deep learning models are working much better than the baseline.  
 
 ## Results and Conclusion
 Out of the 3 models I built and tested, the deep learning model using MPNet embeddings and FAISS gave the most consistent and meaningful reocmmendations. This model was able to recommend books that were similar by thematic elements and genre.  
 
-This project demonstrated how combinging NLP techniques with structured metadata and user preferences enables a more personalized book recommendation experience. I wish to keep working on and improving this project and in the future I would like to:
+This project demonstrated how combinging NLP techniques with structured metadata and user preferences enables a more personalized book recommendation experience. I wish to keep working on and improving this project and in the future I would like to:  
 
--Include more book titles
--Use more data to train the model
--Add user feedback for continued updates
--Fine tune the sentance transformer on book review data for better embeddings
+- Include more book titles  
+- Use more data to train the model  
+- Add user feedback for continued updates  
+- Fine tune the sentance transformer on book review data for better embeddings  
 
 ## Project Structure
 
